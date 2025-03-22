@@ -1,4 +1,5 @@
 #include "src/include/matrix.hpp"
+#include "src/include/test.hpp"
 #include <vector>
 #include <iostream>
 #include <ctime>
@@ -61,11 +62,12 @@ void SaveToCSV(std::string path) {
 
 
 int main() {   
-    for (int size_matrix = 3; size_matrix <= 8; size_matrix++) {
-        std::cout << "Matrix size: " << size_matrix << std::endl;
-        TestTime(size_matrix, 20);
-    }
+    // for (int size_matrix = 3; size_matrix <= 8; size_matrix++) {
+    //     std::cout << "Matrix size: " << size_matrix << std::endl;
+    //     TestTime(size_matrix, 20);
+    // }
 
-    SaveToCSV("result.csv");
+    // SaveToCSV("result.csv");
+    tests();
     return 0;
 }

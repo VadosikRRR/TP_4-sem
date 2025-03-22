@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-int Matrix::thread_pool_ = 0;
+int Matrix::thread_pool_ = 4;
 int Matrix::max_thread_deepth_level_ = 3;
 std::mutex Matrix::thread_pool_mutex_;
 
