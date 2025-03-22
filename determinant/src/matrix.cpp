@@ -1,12 +1,14 @@
 #include "include/matrix.hpp"
 #include <thread>
+#include <mutex>
 #include <memory>
 #include <cstdlib>
 #include <iostream>
 
 
-int Matrix::thread_pool_ = 7;
-int Matrix::max_thread_deepth_level_ = 20;
+int Matrix::thread_pool_ = 0;
+int Matrix::max_thread_deepth_level_ = 3;
+std::mutex Matrix::thread_pool_mutex_;
 
 Matrix::Matrix(int height, int width, std::vector<std::vector<int>> &matrix_data) {
     height_ = height >= 1 ? height : 1;
@@ -39,27 +41,35 @@ void Matrix::Determinant(double &result, int current_deep_level) {
 }
 
 void Matrix::DeterminantByRow(std::vector<double> &minor_determinants, int current_deep_level) {
+    std::vector<std::thread> threads;
+    current_deep_level++;
     for (size_t column = 0; column < width_; column++) {
         if (data_[0][column] == 0) {
             minor_determinants[column] = 0;
             continue;
         }
-        
-        current_deep_level++;
+
+        Matrix minor = GetMinor(0, column);
+        std::unique_lock<std::mutex> locker(Matrix::thread_pool_mutex_);
         if (thread_pool_ > 0 && current_deep_level <= max_thread_deepth_level_) {
-            std::shared_ptr<Matrix> ptr_minor = std::make_shared<Matrix>(GetMinor(0, column));
             thread_pool_--;
-            auto minor_determinant { [](std::shared_ptr<Matrix> ptr_minor, 
+            locker.unlock();
+            auto minor_determinant { [](Matrix minor, 
                                           int current_deep_level, 
                                           double &result) 
-                                          { ptr_minor->Determinant(result, current_deep_level);
+                                          { minor.Determinant(result, current_deep_level);
+                                            std::lock_guard<std::mutex> locker(Matrix::thread_pool_mutex_);
                                             thread_pool_++; }};
-            std::thread determinant_thread(minor_determinant, ptr_minor, current_deep_level, std::ref(minor_determinants[column]));
-            determinant_thread.join();
+            threads.emplace_back(minor_determinant, minor, 
+            current_deep_level, std::ref(minor_determinants[column]));
         } else {
-            Matrix minor = GetMinor(0, column);
+            locker.unlock();
             minor.Determinant(minor_determinants[column], current_deep_level);
         }
+    }
+
+    for (auto &thread : threads) {
+        thread.join();
     }
 }
 
@@ -94,6 +104,18 @@ Matrix CreateMatrix(int row_number, int column_number) {
     }
     
     return {row_number, column_number, data};
+}
+
+void Matrix::SetThreadPool(int thread_number) {
+    if (thread_number >= 0) {
+        thread_pool_ = thread_number;
+    }
+}
+
+void Matrix::SetMaxDeepth(int new_max_deepth) {
+    if (new_max_deepth >= 1) {
+        max_thread_deepth_level_ = new_max_deepth;
+    }
 }
 
 void PrintMatrix(Matrix &matrix) {
