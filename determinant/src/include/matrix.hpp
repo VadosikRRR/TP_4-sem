@@ -12,10 +12,10 @@ private:
     int width_;
     std::vector<std::vector<int>> data_;
     Matrix GetMinor(int row, int column);
-    void DeterminantByRow(std::vector<double> &minor_determinants, int current_deep_level = 1);
+    void DeterminantByRow(std::vector<int> &minor_determinants, int current_deep_level = 1);
 public:
     Matrix(int height, int width, std::vector<std::vector<int>> &matrix_data);
-    void Determinant(double &result, int current_deep_level = 1);
+    void Determinant(int &result, int current_deep_level = 1);
     int GetRowNumber();
     int GetColumnNumber();
     int GetNumber(int row, int column);

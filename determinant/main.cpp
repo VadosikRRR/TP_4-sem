@@ -27,7 +27,7 @@ void TestTime(int size_matrix, int iteration_number) {
             double all_time = 0;
             for (int iterate = 0; iterate < iteration_number; iterate++) {
                 Matrix matrix = CreateMatrix(size_matrix, size_matrix);
-                double result = 0;
+                int result = 0;
                 clock_t start_time = clock();
                 matrix.Determinant(result);
                 clock_t end_time = clock();
@@ -62,12 +62,12 @@ void SaveToCSV(std::string path) {
 
 
 int main() {   
-    // for (int size_matrix = 3; size_matrix <= 8; size_matrix++) {
-    //     std::cout << "Matrix size: " << size_matrix << std::endl;
-    //     TestTime(size_matrix, 20);
-    // }
+    for (int size_matrix = 3; size_matrix <= 6; size_matrix++) {
+        std::cout << "Matrix size: " << size_matrix << std::endl;
+        TestTime(size_matrix, 20);
+    }
 
-    // SaveToCSV("result.csv");
+    SaveToCSV("result.csv");
     tests();
     return 0;
 }

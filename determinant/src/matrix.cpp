@@ -16,7 +16,7 @@ Matrix::Matrix(int height, int width, std::vector<std::vector<int>> &matrix_data
     data_ = matrix_data;
 }
 
-void Matrix::Determinant(double &result, int current_deep_level) {
+void Matrix::Determinant(int &result, int current_deep_level) {
     if (height_ != width_) {
         result = -20; //
         return;
@@ -27,7 +27,7 @@ void Matrix::Determinant(double &result, int current_deep_level) {
         return;
     }
     
-    std::vector<double> minor_determinants(width_, 0);
+    std::vector<int> minor_determinants(width_, 0);
     DeterminantByRow(minor_determinants, current_deep_level);
 
     double deletrminant = 0;
@@ -40,7 +40,7 @@ void Matrix::Determinant(double &result, int current_deep_level) {
     result = deletrminant;
 }
 
-void Matrix::DeterminantByRow(std::vector<double> &minor_determinants, int current_deep_level) {
+void Matrix::DeterminantByRow(std::vector<int> &minor_determinants, int current_deep_level) {
     std::vector<std::thread> threads;
     current_deep_level++;
     for (size_t column = 0; column < width_; column++) {
@@ -56,7 +56,7 @@ void Matrix::DeterminantByRow(std::vector<double> &minor_determinants, int curre
             locker.unlock();
             auto minor_determinant { [](Matrix minor, 
                                           int current_deep_level, 
-                                          double &result) 
+                                          int &result) 
                                           { minor.Determinant(result, current_deep_level);
                                             std::lock_guard<std::mutex> locker(Matrix::thread_pool_mutex_);
                                             thread_pool_++; }};
