@@ -41,6 +41,13 @@ void Matrix::Determinant(int &result, int current_deep_level) {
 }
 
 void Matrix::DeterminantByRow(std::vector<int> &minor_determinants, int current_deep_level) {
+    auto minor_determinant { [](Matrix minor, 
+        int current_deep_level, 
+        int &result) 
+        { minor.Determinant(result, current_deep_level);
+          std::lock_guard<std::mutex> locker(Matrix::thread_pool_mutex_);
+          thread_pool_++; }};
+
     std::vector<std::thread> threads;
     current_deep_level++;
     for (size_t column = 0; column < width_; column++) {
@@ -54,12 +61,6 @@ void Matrix::DeterminantByRow(std::vector<int> &minor_determinants, int current_
         if (thread_pool_ > 0 && current_deep_level <= max_thread_deepth_level_) {
             thread_pool_--;
             locker.unlock();
-            auto minor_determinant { [](Matrix minor, 
-                                          int current_deep_level, 
-                                          int &result) 
-                                          { minor.Determinant(result, current_deep_level);
-                                            std::lock_guard<std::mutex> locker(Matrix::thread_pool_mutex_);
-                                            thread_pool_++; }};
             threads.emplace_back(minor_determinant, minor, 
             current_deep_level, std::ref(minor_determinants[column]));
         } else {

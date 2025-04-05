@@ -62,7 +62,7 @@ void SaveToCSV(std::string path) {
 
 
 int main() {   
-    for (int size_matrix = 3; size_matrix <= 6; size_matrix++) {
+    for (int size_matrix = 3; size_matrix <= 5; size_matrix++) {
         std::cout << "Matrix size: " << size_matrix << std::endl;
         TestTime(size_matrix, 20);
     }

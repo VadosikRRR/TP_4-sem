@@ -7,6 +7,7 @@
 void tests() {
     correctnessTest1();
     correctnessTest2();
+    correctnessTest3();
 }
 
 void correctnessTest1() {

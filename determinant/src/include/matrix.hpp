@@ -5,6 +5,7 @@
 
 class Matrix {
 private:
+    // Следует не смешивать две разных по смыслу вещи. Матрица скорее просто структура или класс
     static int thread_pool_;
     static int max_thread_deepth_level_;
     static std::mutex thread_pool_mutex_;
