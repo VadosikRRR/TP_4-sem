@@ -1,5 +1,7 @@
 #include "src/include/matrix.hpp"
 #include "src/include/test.hpp"
+#include "src/include/thread_pool.hpp"
+#include "src/include/determinant.hpp"
 #include <vector>
 #include <iostream>
 #include <ctime>
@@ -20,16 +22,17 @@ std::vector<Row> data;
 
 
 void TestTime(int size_matrix, int iteration_number) {
+    ThreadPool &thread_pool = ThreadPool::Instance();
     for (int thread_number = 0; thread_number < MAX_THREAD_NUMBER; thread_number++) {
-        Matrix::SetThreadPool(thread_number);
+        thread_pool.SetThreadPool(thread_number);
         for (int max_deepth = 1; max_deepth <= size_matrix; max_deepth++) {
-            Matrix::SetMaxDeepth(max_deepth);
+            thread_pool.SetMaxDepth(max_deepth);
             double all_time = 0;
             for (int iterate = 0; iterate < iteration_number; iterate++) {
                 Matrix matrix = CreateMatrix(size_matrix, size_matrix);
                 int result = 0;
                 clock_t start_time = clock();
-                matrix.Determinant(result);
+                Determinant(matrix, result);
                 clock_t end_time = clock();
                 all_time += static_cast<double>(end_time - start_time) / CLOCKS_PER_SEC;
             }
@@ -62,9 +65,9 @@ void SaveToCSV(std::string path) {
 
 
 int main() {   
-    for (int size_matrix = 3; size_matrix <= 5; size_matrix++) {
+    for (int size_matrix = 3; size_matrix <= 8; size_matrix++) {
         std::cout << "Matrix size: " << size_matrix << std::endl;
-        TestTime(size_matrix, 20);
+        TestTime(size_matrix, 1);
     }
 
     SaveToCSV("result.csv");

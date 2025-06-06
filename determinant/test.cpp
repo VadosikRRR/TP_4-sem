@@ -1,5 +1,7 @@
 #include "src/include/test.hpp"
 #include "src/include/matrix.hpp"
+#include "src/include/determinant.hpp"
+#include "src/include/thread_pool.hpp"
 #include <vector>
 #include <iostream>
 
@@ -17,7 +19,7 @@ void correctnessTest1() {
     Matrix matrix {3, 3, data};
     int real_determinant = -24;
     int calculate_determinant = 0;
-    matrix.Determinant(calculate_determinant);
+    Determinant(matrix, calculate_determinant);
     if (calculate_determinant == real_determinant) {
         std::cout << "Correctness test 1 is passed" << std::endl;
         return;
@@ -37,7 +39,7 @@ void correctnessTest2() {
     Matrix matrix {5, 5, data};
     int real_determinant = 80;
     int calculate_determinant = 0;
-    matrix.Determinant(calculate_determinant);
+    Determinant(matrix, calculate_determinant);
     if (calculate_determinant == real_determinant) {
         std::cout << "Correctness test 2 is passed" << std::endl;
         return;
@@ -59,7 +61,7 @@ void correctnessTest3() {
     Matrix matrix {7, 7, data};
     int real_determinant = -2016;
     int calculate_determinant = 0;
-    matrix.Determinant(calculate_determinant);
+    Determinant(matrix, calculate_determinant);
     if (calculate_determinant == real_determinant) {
         std::cout << "Correctness test 2 is passed" << std::endl;
         return;
