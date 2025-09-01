@@ -56,23 +56,23 @@ bool List::Find(Data data) { // более оптимально
     return false;
 }
 
-// void List::Erase(Data data) {
+// bool List::Find(Data data) {
 //     if (!root_->next_node_) {
-//         return;
+//         return false;
 //     }
-
+    
 //     std::shared_ptr<Node> temp = root_;
+//     std::unique_lock next_locker(temp->next_node_->node_mutex);
 //     while (temp->next_node_) {
-//         if (temp->next_node_->data_ != data) {
-//             temp = temp->next_node_;
-//             continue;
+//         if (temp->data_ == data) {
+//             return true;
 //         }
-        
-//         std::lock_guard locker_temp(temp->node_mutex);
-//         std::lock_guard locker_del(temp->next_node_->node_mutex);
-//         temp->next_node_ = (temp->next_node_)->next_node_;
-//         return;
+
+//         next_locker.unlock();
+//         temp = temp->next_node_;
+//         std::unique_lock next_locker(temp->next_node_->node_mutex);
 //     }
+//     return false;
 // }
 
 void List::Erase(Data data) {
@@ -80,27 +80,46 @@ void List::Erase(Data data) {
         return;
     }
 
-    std::shared_ptr<Node> prev = root_;
-    std::unique_lock<std::mutex> lock_prev(prev->node_mutex);
-    std::shared_ptr<Node> current = prev->next_node_;
-
-    while (current) {
-        std::unique_lock<std::mutex> lock_current(current->node_mutex);
-
-        if (prev->next_node_ != current) {
-            lock_current.unlock();
-            current = prev->next_node_;
+    std::shared_ptr<Node> temp = root_;
+    while (temp->next_node_) {
+        if (temp->next_node_->data_ != data) {
+            temp = temp->next_node_;
             continue;
         }
-
-        if (current->data_ == data) {
-            prev->next_node_ = current->next_node_;
-            return;
-        }
-
-        lock_prev.unlock();
-        prev = current;
-        lock_prev = std::move(lock_current);
-        current = current->next_node_;
+        
+        std::lock_guard locker_temp(temp->node_mutex);
+        std::lock_guard locker_del(temp->next_node_->node_mutex);
+        temp->next_node_ = (temp->next_node_)->next_node_;
+        return;
     }
 }
+
+// void List::Erase(Data data) {
+//     if (!root_->next_node_) {
+//         return;
+//     }
+
+//     std::shared_ptr<Node> prev = root_;
+//     std::unique_lock<std::mutex> lock_prev(prev->node_mutex);
+//     std::shared_ptr<Node> current = prev->next_node_;
+
+//     while (current) {
+//         std::unique_lock<std::mutex> lock_current(current->node_mutex);
+
+//         if (prev->next_node_ != current) {
+//             lock_current.unlock();
+//             current = prev->next_node_;
+//             continue;
+//         }
+
+//         if (current->data_ == data) {
+//             prev->next_node_ = current->next_node_;
+//             return;
+//         }
+
+//         lock_prev.unlock();
+//         prev = current;
+//         lock_prev = std::move(lock_current);
+//         current = current->next_node_;
+//     }
+// }
