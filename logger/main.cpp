@@ -3,17 +3,16 @@
 #include "src/include/logger2.hpp"
 #include "src/include/logger3.hpp"
 #include "src/include/logger4.hpp"
-// #include <cstdlib>
 #include <thread>
 #include <list>
 #include <chrono>
 #include <format>
 
 
-std::shared_ptr<Logger1> LOGGER = Logger1::Instance();
+// std::shared_ptr<Logger1> LOGGER = Logger1::Instance();
 // std::shared_ptr<Logger2> LOGGER = Logger2::Instance();
 // std::shared_ptr<Logger3> LOGGER = Logger3::Instance();
-// std::shared_ptr<Logger4> LOGGER = Logger4::Instance();
+std::shared_ptr<Logger4> LOGGER = Logger4::Instance();
 
 void task(double max_period, int max_iteration, int number) {
     // in ms

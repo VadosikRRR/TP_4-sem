@@ -19,13 +19,14 @@ Logger4::~Logger4() {
 
 void Logger4::Add(Data data) {
     while (true) {
-        std::lock_guard locker(logger_mutex_);
+        std::unique_lock locker(logger_mutex_);
         if (current_size_ < max_buffer_size_) {
             buffer_.push(data);
             current_size_++;
             return;
         }
-
+        
+        locker.unlock();
         std::this_thread::yield();
     }
 }
